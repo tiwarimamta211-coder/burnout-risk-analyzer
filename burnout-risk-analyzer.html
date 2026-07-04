@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Burnout Risk Analyzer | IncomeAIHub</title>
+<meta name="description" content="Freelancers aur CA professionals ke liye AI-powered Burnout Risk Analyzer. Apna burnout score check karein aur personalized recovery plan paayein.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0f;
+    --bg-panel:#12121b;
+    --bg-panel-2:#191925;
+    --border:#242433;
+    --text:#eceaf5;
+    --text-dim:#8f8ca3;
+    --text-faint:#5c5a6e;
+    --gold:#d4af37;
+    --gold-soft:rgba(212,175,55,.14);
+    --emerald:#22c58b;
+    --emerald-soft:rgba(34,197,139,.14);
+    --violet:#8b6ef5;
+    --violet-soft:rgba(139,110,245,.14);
+    --danger:#e2564f;
+    --danger-soft:rgba(226,86,79,.14);
+    --amber:#e2a03f;
+    --amber-soft:rgba(226,160,63,.14);
+    --radius:16px;
+    --font-display:'Syne',sans-serif;
+    --font-body:'DM Sans',sans-serif;
+    --font-mono:'DM Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(1000px 500px at 10% -10%, rgba(139,110,245,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(212,175,55,.08), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Header ---------- */
+  header.site{
+    border-bottom:1px solid var(--border);
+    padding:18px 0;
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,10,15,.85);
+    backdrop-filter:blur(10px);
+  }
+  header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg,var(--gold),var(--emerald));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-weight:800;color:#0a0a0f;font-size:15px;
+    flex-shrink:0;
+  }
+  .brand-name{font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:.2px;}
+  .brand-name span{color:var(--gold);}
+  .brand-tag{font-size:11px;color:var(--text-faint);font-family:var(--font-mono);}
+  .header-actions{display:flex;gap:10px;align-items:center;}
+  .btn-ghost{
+    background:transparent;border:1px solid var(--border);color:var(--text-dim);
+    padding:9px 14px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;
+    font-family:var(--font-body);transition:.2s;white-space:nowrap;
+  }
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:56px 0 28px;text-align:center;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--violet);background:var(--violet-soft);border:1px solid rgba(139,110,245,.3);
+    padding:6px 14px;border-radius:999px;margin-bottom:22px;
+  }
+  .hero h1{
+    font-family:var(--font-display);font-weight:800;
+    font-size:clamp(30px,5vw,50px);line-height:1.08;letter-spacing:-.5px;
+    max-width:760px;margin:0 auto 16px;
+  }
+  .hero h1 .accent{
+    background:linear-gradient(135deg,var(--gold),var(--emerald));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{color:var(--text-dim);font-size:16px;max-width:560px;margin:0 auto;}
+  .hero .hinglish{font-size:14px;color:var(--text-faint);margin-top:10px;font-family:var(--font-mono);}
+
+  /* ---------- Ad Slot ---------- */
+  .ad-slot{
+    max-width:1080px;margin:20px auto;padding:0 20px;
+  }
+  .ad-slot .ad-box{
+    border:1px dashed var(--border);border-radius:12px;
+    padding:14px;text-align:center;color:var(--text-faint);
+    font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    background:rgba(255,255,255,.015);
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    max-width:1080px;margin:10px auto 60px;padding:0 20px;
+    display:grid;grid-template-columns:1fr;gap:24px;
+  }
+
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:28px;
+  }
+  .card + .card{margin-top:0;}
+
+  /* progress */
+  .progress-row{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+  .progress-track{flex:1;height:6px;border-radius:99px;background:var(--bg-panel-2);overflow:hidden;}
+  .progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--violet),var(--gold));width:0%;transition:width .35s ease;}
+  .progress-label{font-family:var(--font-mono);font-size:12px;color:var(--text-dim);white-space:nowrap;}
+
+  .section-title{
+    font-family:var(--font-display);font-weight:700;font-size:20px;margin-bottom:4px;
+  }
+  .section-sub{color:var(--text-dim);font-size:13px;margin-bottom:22px;}
+  .dim-tag{
+    display:inline-block;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;
+    letter-spacing:1px;padding:4px 10px;border-radius:999px;margin-bottom:14px;
+  }
+  .dim-tag.ee{background:var(--danger-soft);color:var(--danger);}
+  .dim-tag.dp{background:var(--amber-soft);color:var(--amber);}
+  .dim-tag.pa{background:var(--emerald-soft);color:var(--emerald);}
+  .dim-tag.lf{background:var(--violet-soft);color:var(--violet);}
+
+  .question{
+    padding:20px 0;border-bottom:1px solid var(--border);
+  }
+  .question:last-child{border-bottom:none;padding-bottom:4px;}
+  .question p.qtext{font-size:15px;font-weight:500;margin-bottom:14px;}
+  .scale{display:flex;gap:8px;flex-wrap:wrap;}
+  .scale button{
+    flex:1;min-width:64px;
+    background:var(--bg-panel-2);border:1px solid var(--border);
+    color:var(--text-dim);padding:10px 6px;border-radius:10px;
+    font-family:var(--font-body);font-size:12px;cursor:pointer;transition:.15s;
+    text-align:center;
+  }
+  .scale button:hover{border-color:var(--violet);color:var(--text);}
+  .scale button.active{
+    background:linear-gradient(135deg,var(--violet),var(--gold));
+    border-color:transparent;color:#0a0a0f;font-weight:700;
+  }
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
+  .field label{display:block;font-size:13px;color:var(--text-dim);margin-bottom:8px;}
+  .field input, .field select{
+    width:100%;background:var(--bg-panel-2);border:1px solid var(--border);
+    color:var(--text);padding:11px 12px;border-radius:10px;font-family:var(--font-body);font-size:14px;
+  }
+  .field input:focus, .field select:focus{outline:none;border-color:var(--violet);}
+
+  .nav-buttons{display:flex;justify-content:space-between;gap:12px;margin-top:26px;}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--gold),var(--emerald));
+    color:#0a0a0f;border:none;padding:13px 26px;border-radius:12px;
+    font-weight:700;font-size:14px;cursor:pointer;font-family:var(--font-body);
+    transition:.2s;
+  }
+  .btn-primary:hover{transform:translateY(-1px);filter:brightness(1.06);}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-secondary{
+    background:transparent;border:1px solid var(--border);color:var(--text-dim);
+    padding:13px 22px;border-radius:12px;font-size:14px;cursor:pointer;font-family:var(--font-body);
+  }
+  .btn-secondary:hover{border-color:var(--text-dim);color:var(--text);}
+
+  /* ---------- Results ---------- */
+  .result-hero{text-align:center;padding:10px 0 20px;}
+  .gauge-wrap{position:relative;width:240px;height:150px;margin:0 auto 6px;}
+  .risk-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--font-mono);font-size:13px;letter-spacing:1px;text-transform:uppercase;
+    padding:8px 18px;border-radius:999px;margin-top:8px;font-weight:600;
+  }
+  .risk-low{background:var(--emerald-soft);color:var(--emerald);border:1px solid rgba(34,197,139,.35);}
+  .risk-moderate{background:var(--amber-soft);color:var(--amber);border:1px solid rgba(226,160,63,.35);}
+  .risk-high{background:rgba(226,86,79,.14);color:#f08a85;border:1px solid rgba(226,86,79,.35);}
+  .risk-severe{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(226,86,79,.5);}
+
+  .score-big{font-family:var(--font-display);font-weight:800;font-size:52px;margin:6px 0 2px;}
+
+  .dim-breakdown{display:grid;grid-template-columns:1fr;gap:14px;margin-top:26px;}
+  .dim-row{
+    background:var(--bg-panel-2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;
+  }
+  .dim-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .dim-row-top .name{font-weight:600;font-size:14px;}
+  .dim-row-top .val{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);}
+  .bar-track{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:99px;}
+
+  .reco-list{margin-top:24px;display:flex;flex-direction:column;gap:12px;}
+  .reco-item{
+    display:flex;gap:12px;background:var(--bg-panel-2);border:1px solid var(--border);
+    border-radius:12px;padding:14px 16px;align-items:flex-start;
+  }
+  .reco-item .icon{
+    width:28px;height:28px;border-radius:8px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:14px;
+    background:var(--violet-soft);color:var(--violet);
+  }
+  .reco-item p{font-size:13.5px;color:var(--text-dim);}
+  .reco-item strong{color:var(--text);}
+
+  /* ---------- History ---------- */
+  .history-empty{color:var(--text-faint);font-size:13px;text-align:center;padding:30px 0;}
+  .history-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .history-table th{
+    text-align:left;color:var(--text-faint);font-family:var(--font-mono);font-size:11px;
+    text-transform:uppercase;letter-spacing:.5px;padding:10px 8px;border-bottom:1px solid var(--border);
+  }
+  .history-table td{padding:12px 8px;border-bottom:1px solid var(--border);}
+  .history-table tr:last-child td{border-bottom:none;}
+  .mini-chip{
+    font-family:var(--font-mono);font-size:11px;padding:3px 9px;border-radius:999px;display:inline-block;
+  }
+
+  /* ---------- Premium panel ---------- */
+  .premium-panel{
+    border:1px solid rgba(212,175,55,.35);
+    background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(139,110,245,.06));
+    border-radius:var(--radius);padding:26px;text-align:center;
+  }
+  .premium-panel h3{font-family:var(--font-display);font-size:20px;margin-bottom:8px;}
+  .premium-panel p{color:var(--text-dim);font-size:13.5px;max-width:460px;margin:0 auto 18px;}
+  .price-tag{font-family:var(--font-mono);font-size:13px;color:var(--gold);margin-bottom:16px;}
+  .feature-mini{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:20px;}
+  .feature-mini span{
+    font-size:12px;color:var(--text-dim);background:rgba(255,255,255,.03);
+    border:1px solid var(--border);padding:6px 12px;border-radius:999px;
+  }
+
+  .action-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px;}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--border);padding:30px 0;margin-top:20px;}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  footer p{font-size:12px;color:var(--text-faint);}
+  footer .links a{font-size:12px;color:var(--text-dim);margin-left:16px;text-decoration:none;}
+  footer .links a:hover{color:var(--gold);}
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(5,5,10,.75);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal-box{
+    background:var(--bg-panel);border:1px solid var(--border);border-radius:18px;
+    max-width:620px;width:100%;max-height:82vh;overflow-y:auto;padding:30px;position:relative;
+  }
+  .modal-box h2{font-family:var(--font-display);font-size:22px;margin-bottom:18px;color:var(--gold);}
+  .modal-box h4{font-family:var(--font-display);font-size:15px;margin:18px 0 6px;color:var(--emerald);}
+  .modal-box p, .modal-box li{font-size:14px;color:var(--text-dim);line-height:1.7;}
+  .modal-box ul{padding-left:20px;margin-bottom:8px;}
+  .modal-close{
+    position:absolute;top:18px;right:18px;background:var(--bg-panel-2);border:1px solid var(--border);
+    color:var(--text-dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;
+  }
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+    background:var(--bg-panel-2);border:1px solid var(--gold);color:var(--text);
+    padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;transition:.3s;opacity:0;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+  .hidden{display:none !important;}
+
+  @media(max-width:640px){
+    .form-grid{grid-template-columns:1fr;}
+    .card{padding:20px;}
+    .hero{padding:40px 0 20px;}
+    footer .wrap{flex-direction:column;text-align:center;}
+    footer .links a{margin:0 8px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark">IH</div>
+      <div>
+        <div class="brand-name">Income<span>AI</span>Hub</div>
+        <div class="brand-tag">Burnout Risk Analyzer</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-ghost" onclick="openModal('guideModal')">🇮🇳 हिंदी गाइड</button>
+      <button class="btn-ghost" id="historyBtn" onclick="showHistory()">History</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">● Free Self-Assessment Tool</span>
+    <h1>Kya aap <span class="accent">burnout</span> ki taraf badh rahe hain?</h1>
+    <p>2 minute ka scientific assessment lein — based on Maslach Burnout Inventory framework — aur apna personalized risk score, breakdown aur recovery plan paayein.</p>
+    <p class="hinglish">Freelancers • CA Professionals • MSME Owners ke liye khaas taur par design kiya gaya</p>
+  </div>
+</section>
+
+<div class="ad-slot">
+  <div class="ad-box">Advertisement — Google AdSense Placeholder (728x90)</div>
+</div>
+
+<main class="layout">
+
+  <!-- ================= INTAKE FORM ================= -->
+  <div class="card" id="intakeCard">
+    <div class="section-title">Step 1: Basic Details</div>
+    <div class="section-sub">Behtar accuracy ke liye apni working details bharein</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Aap kya karte hain?</label>
+        <select id="roleSelect">
+          <option value="freelancer">Freelancer</option>
+          <option value="ca">CA / Accounting Professional</option>
+          <option value="msme">MSME / Small Business Owner</option>
+          <option value="employee">Salaried Employee</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Roz kitne ghante kaam karte hain?</label>
+        <select id="hoursSelect">
+          <option value="0">6 ghante ya kam</option>
+          <option value="1">7-8 ghante</option>
+          <option value="2">9-10 ghante</option>
+          <option value="3">11-12 ghante</option>
+          <option value="4">12+ ghante</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Raat mein average neend kitni hoti hai?</label>
+        <select id="sleepSelect">
+          <option value="0">7-8 ghante ya zyada</option>
+          <option value="1">6-7 ghante</option>
+          <option value="2">5-6 ghante</option>
+          <option value="3">5 ghante se kam</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Pichle mahine kitni chhutti li?</label>
+        <select id="offSelect">
+          <option value="0">4+ din</option>
+          <option value="1">2-3 din</option>
+          <option value="2">1 din</option>
+          <option value="3">Ek bhi din nahi</option>
+        </select>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <div></div>
+      <button class="btn-primary" onclick="startAssessment()">Assessment Shuru Karein →</button>
+    </div>
+  </div>
+
+  <!-- ================= QUESTIONNAIRE ================= -->
+  <div class="card hidden" id="quizCard">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 18</div>
+    </div>
+    <div id="quizContainer"></div>
+    <div class="nav-buttons">
+      <button class="btn-secondary" onclick="prevPage()">← Peeche</button>
+      <button class="btn-primary" id="nextBtn" onclick="nextPage()">Aage →</button>
+    </div>
+  </div>
+
+  <!-- ================= RESULTS ================= -->
+  <div class="card hidden" id="resultCard">
+    <div class="result-hero">
+      <div class="section-sub" style="margin-bottom:2px;">Aapka Burnout Risk Score</div>
+      <div class="score-big" id="scoreBig">--</div>
+      <div style="color:var(--text-faint);font-size:12px;font-family:var(--font-mono);">out of 100</div>
+      <div id="riskBadge" class="risk-badge risk-low">Low Risk</div>
+    </div>
+
+    <div class="dim-breakdown" id="dimBreakdown"></div>
+
+    <div class="section-title" style="margin-top:30px;">Personalized Recommendations</div>
+    <div class="section-sub">Aapke score ke hisaab se yeh steps follow karein</div>
+    <div class="reco-list" id="recoList"></div>
+
+    <div class="action-row">
+      <button class="btn-secondary" onclick="restartTool()">🔁 Dobara Test Lein</button>
+      <button class="btn-secondary" onclick="printReport()">🖨️ Report Print Karein</button>
+      <button class="btn-primary" onclick="openModal('premiumModal')">🔓 Detailed Recovery Plan (Premium)</button>
+    </div>
+  </div>
+
+  <div class="ad-slot" style="padding:0;margin:0;">
+    <div class="ad-box">Advertisement — Google AdSense Placeholder (In-Feed)</div>
+  </div>
+
+  <!-- ================= HISTORY ================= -->
+  <div class="card hidden" id="historyCard">
+    <div class="section-title">Aapki Assessment History</div>
+    <div class="section-sub">Time ke saath apna burnout trend track karein</div>
+    <div id="historyContent"></div>
+    <div class="nav-buttons">
+      <button class="btn-secondary" onclick="hideHistory()">← Wapas</button>
+      <button class="btn-ghost" onclick="clearHistory()">🗑️ History Clear Karein</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- ================= PREMIUM MODAL ================= -->
+<div class="modal-overlay" id="premiumModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('premiumModal')">✕</button>
+    <div class="premium-panel" style="border:none;background:none;padding:0;">
+      <h3>🔓 Detailed Recovery Plan Unlock Karein</h3>
+      <p>Apne exact burnout dimensions ke hisaab se ek 14-din ka personalized recovery roadmap, weekly check-in tracker aur client-communication scripts paayein.</p>
+      <div class="feature-mini">
+        <span>✓ 14-Day Recovery Roadmap</span>
+        <span>✓ Weekly Check-in Tracker</span>
+        <span>✓ Client Boundary Scripts</span>
+        <span>✓ PDF Download</span>
+      </div>
+      <div class="price-tag">₹149 one-time — lifetime access</div>
+      <div class="action-row" style="margin-top:0;">
+        <button class="btn-primary" onclick="mockPayment()">Razorpay se Pay Karein</button>
+      </div>
+      <p style="margin-top:14px;font-size:11px;color:var(--text-faint);">Demo Mode: Razorpay key configure hone ke baad yeh live payment lega.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= HINDI GUIDE MODAL ================= -->
+<div class="modal-overlay" id="guideModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('guideModal')">✕</button>
+    <h2>📘 उपयोग गाइड (Hindi Guide)</h2>
+    <p><strong>Burnout Risk Analyzer</strong> ek self-assessment tool hai jo aapko yeh samajhne mein madad karta hai ki aap mानसिक aur physical burnout ke kitne kareeb hain.</p>
+
+    <h4>यह कैसे काम करता है?</h4>
+    <ul>
+      <li>Pehle apni basic working details (hours, sleep, chhutti) bharein.</li>
+      <li>Fir 18 sawalon ka jawab dein — har sawal 0 se 4 ke scale par hoga.</li>
+      <li>Tool teen scientific dimensions par score calculate karta hai: Emotional Exhaustion, Cynicism/Detachment, aur Personal Accomplishment.</li>
+      <li>Final mein aapko ek overall risk score (0-100) aur risk level milega — Low, Moderate, High ya Severe.</li>
+    </ul>
+
+    <h4>Dimensions ka matlab</h4>
+    <ul>
+      <li><strong>Emotional Exhaustion:</strong> Aap kitna thaka hua aur drained feel karte hain.</li>
+      <li><strong>Cynicism/Detachment:</strong> Aap apne kaam ya clients se kitna distant ya negative feel karte hain.</li>
+      <li><strong>Personal Accomplishment:</strong> Aap apne kaam mein kitna capable aur satisfied feel karte hain (kam score = zyada risk).</li>
+    </ul>
+
+    <h4>Recovery Plan kya deta hai?</h4>
+    <p>Premium unlock karne par aapko ek 14-din ka structured plan milta hai jisme daily micro-actions, client boundary set karne ke scripts, aur weekly progress tracker shamil hain — khaas taur par freelancers aur CA professionals ke liye design kiya gaya.</p>
+
+    <h4>Zaroori Note</h4>
+    <p>Yeh tool sirf self-awareness ke liye hai, medical diagnosis nahi. Agar aapko lagataar severe symptoms ho rahe hain, toh kripya kisi qualified mental health professional se sampark karein.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 IncomeAIHub · Burnout Risk Analyzer · Self-assessment tool, medical advice nahi hai</p>
+    <div class="links">
+      <a href="#" onclick="openModal('guideModal');return false;">Hindi Guide</a>
+      <a href="#">Privacy</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============ QUESTION BANK ============ */
+// Each question: dimension EE / DP / PA / LF (lifestyle), reverse scored for PA
+const QUESTIONS = [
+  {d:'EE', t:'Din khatam hone par main bilkul khaali (emotionally drained) feel karta/karti hoon.'},
+  {d:'EE', t:'Subah uthte hi mujhe lagta hai ek aur din kaam ka bojh utha nahi paunga/paungi.'},
+  {d:'EE', t:'Poore din kaam karna mere liye ek real strain ban gaya hai.'},
+  {d:'EE', t:'Main clients/logon ke saath kaam karke burnt out feel karta/karti hoon.'},
+  {d:'EE', t:'Mujhe lagta hai main apni energy ki last limit par hoon.'},
+  {d:'EE', t:'Chhoti chhoti deadlines bhi mujhe overwhelmed feel karati hain.'},
+  {d:'DP', t:'Maine notice kiya hai ki main clients/colleagues ke prati zyada insensitive ho gaya/gayi hoon.'},
+  {d:'DP', t:'Main apne kaam se emotionally detach feel karta/karti hoon, jaise autopilot par hoon.'},
+  {d:'DP', t:'Mujhe fikar hai ki yeh kaam mujhe emotionally hard bana raha hai.'},
+  {d:'DP', t:'Main clients ki problems ko personally lena band kar chuka/chuki hoon — bas kaam nikal raha hoon.'},
+  {d:'DP', t:'Mujhe apne kaam/business ko lekar cynical ya negative thoughts aate hain.'},
+  {d:'DP', t:'Main soch raha/rahi hoon ki yeh field/kaam chhod dena chahiye.'},
+  {d:'PA', t:'Main apne kaam mein useful aur effective contribution kar raha/rahi hoon.'},
+  {d:'PA', t:'Main apne clients/customers ke saath easily rapport bana leta/leti hoon.'},
+  {d:'PA', t:'Kaam khatam karne ke baad mujhe accomplishment ka ehsaas hota hai.'},
+  {d:'PA', t:'Mujhe apni professional abilities par confidence hai.'},
+  {d:'LF', t:'Payment delays ya client negotiations mujhe kaafi stress dete hain.'},
+  {d:'LF', t:'Mujhe apne kaam aur personal life ke beech balance banana mushkil lagta hai.'},
+];
+const SCALE_LABELS = ['Kabhi Nahi','Kabhi Kabhi','Kabhi Kabhi','Aksar','Hamesha'];
+
+let currentQ = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let intakeData = {};
+const QUESTIONS_PER_PAGE = 3;
+
+/* ============ NAVIGATION ============ */
+function startAssessment(){
+  intakeData = {
+    role: document.getElementById('roleSelect').value,
+    hours: parseInt(document.getElementById('hoursSelect').value),
+    sleep: parseInt(document.getElementById('sleepSelect').value),
+    off: parseInt(document.getElementById('offSelect').value),
+  };
+  document.getElementById('intakeCard').classList.add('hidden');
+  document.getElementById('quizCard').classList.remove('hidden');
+  currentQ = 0;
+  renderQuizPage();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderQuizPage(){
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  const start = currentQ;
+  const end = Math.min(start + QUESTIONS_PER_PAGE, QUESTIONS.length);
+
+  for(let i=start;i<end;i++){
+    const q = QUESTIONS[i];
+    const div = document.createElement('div');
+    div.className = 'question';
+    const tagClass = q.d.toLowerCase();
+    const tagName = {ee:'Emotional Exhaustion',dp:'Detachment',pa:'Accomplishment',lf:'Lifestyle'}[tagClass];
+    div.innerHTML = `
+      <span class="dim-tag ${tagClass}">${tagName}</span>
+      <p class="qtext">${i+1}. ${q.t}</p>
+      <div class="scale" data-qindex="${i}">
+        ${SCALE_LABELS.map((label,val)=>`<button type="button" class="${answers[i]===val?'active':''}" onclick="selectAnswer(${i},${val})">${label}</button>`).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  }
+
+  const total = QUESTIONS.length;
+  const progressPct = Math.round((Math.min(end,total)/total)*100);
+  document.getElementById('progressFill').style.width = progressPct + '%';
+  document.getElementById('progressLabel').textContent = `${Math.min(end,total)} / ${total}`;
+
+  const isLast = end >= total;
+  document.getElementById('nextBtn').textContent = isLast ? 'Result Dekhein →' : 'Aage →';
+}
+
+function selectAnswer(index, value){
+  answers[index] = value;
+  const group = document.querySelector(`.scale[data-qindex="${index}"]`);
+  [...group.children].forEach((btn,i)=>btn.classList.toggle('active', i===value));
+}
+
+function currentPageAnswered(){
+  const start = currentQ;
+  const end = Math.min(start + QUESTIONS_PER_PAGE, QUESTIONS.length);
+  for(let i=start;i<end;i++){
+    if(answers[i] === null) return false;
+  }
+  return true;
+}
+
+function nextPage(){
+  if(!currentPageAnswered()){
+    showToast('Kripya sabhi sawalon ka jawab dein');
+    return;
+  }
+  currentQ += QUESTIONS_PER_PAGE;
+  if(currentQ >= QUESTIONS.length){
+    calculateResults();
+  } else {
+    renderQuizPage();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+function prevPage(){
+  if(currentQ === 0){
+    document.getElementById('quizCard').classList.add('hidden');
+    document.getElementById('intakeCard').classList.remove('hidden');
+    return;
+  }
+  currentQ -= QUESTIONS_PER_PAGE;
+  renderQuizPage();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============ SCORING ============ */
+function calculateResults(){
+  const dims = {EE:[],DP:[],PA:[],LF:[]};
+  QUESTIONS.forEach((q,i)=>dims[q.d].push(answers[i]));
+
+  const avg = arr => arr.reduce((a,b)=>a+b,0) / arr.length; // 0-4
+
+  const eeScore = avg(dims.EE) / 4 * 100;
+  const dpScore = avg(dims.DP) / 4 * 100;
+  const paScoreRaw = avg(dims.PA) / 4 * 100;
+  const paScore = 100 - paScoreRaw; // reverse: low accomplishment = high risk
+  const lfScore = avg(dims.LF) / 4 * 100;
+
+  // lifestyle multiplier from intake
+  const lifestylePenalty = (intakeData.hours*3) + (intakeData.sleep*3) + (intakeData.off*3);
+
+  const overall = Math.min(100, Math.round(
+    (eeScore*0.35) + (dpScore*0.25) + (paScore*0.20) + (lfScore*0.10) + (lifestylePenalty*0.10)
+  ));
+
+  const dimensions = [
+    {name:'Emotional Exhaustion', score:Math.round(eeScore), color:'var(--danger)'},
+    {name:'Cynicism / Detachment', score:Math.round(dpScore), color:'var(--amber)'},
+    {name:'Low Accomplishment', score:Math.round(paScore), color:'var(--violet)'},
+    {name:'Lifestyle Stressors', score:Math.round(lfScore), color:'var(--gold)'},
+  ];
+
+  renderResults(overall, dimensions);
+  saveToHistory(overall, dimensions);
+
+  document.getElementById('quizCard').classList.add('hidden');
+  document.getElementById('resultCard').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function riskLevel(score){
+  if(score < 30) return {label:'Low Risk', cls:'risk-low'};
+  if(score < 55) return {label:'Moderate Risk', cls:'risk-moderate'};
+  if(score < 75) return {label:'High Risk', cls:'risk-high'};
+  return {label:'Severe Risk', cls:'risk-severe'};
+}
+
+function renderResults(overall, dimensions){
+  document.getElementById('scoreBig').textContent = overall;
+  const risk = riskLevel(overall);
+  const badge = document.getElementById('riskBadge');
+  badge.textContent = risk.label + ' 🔥';
+  badge.className = 'risk-badge ' + risk.cls;
+
+  const dimContainer = document.getElementById('dimBreakdown');
+  dimContainer.innerHTML = dimensions.map(d => `
+    <div class="dim-row">
+      <div class="dim-row-top">
+        <span class="name">${d.name}</span>
+        <span class="val">${d.score}/100</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${d.score}%;background:${d.color};"></div></div>
+    </div>
+  `).join('');
+
+  document.getElementById('recoList').innerHTML = buildRecommendations(overall, dimensions).map(r => `
+    <div class="reco-item">
+      <div class="icon">${r.icon}</div>
+      <p><strong>${r.title}</strong><br>${r.text}</p>
+    </div>
+  `).join('');
+}
+
+function buildRecommendations(overall, dimensions){
+  const recos = [];
+  const ee = dimensions[0].score, dp = dimensions[1].score, pa = dimensions[2].score, lf = dimensions[3].score;
+
+  if(overall >= 75){
+    recos.push({icon:'🚨', title:'Turant break lein', text:'Aapka score severe range mein hai. Agle 2-3 din mein kam se kam ek pura din off lein aur naye clients/projects na lein.'});
+  }
+  if(ee >= 55){
+    recos.push({icon:'😴', title:'Sleep aur recovery priority banayein', text:'7+ ghante ki neend fix karein. Emotional exhaustion sabse pehle sleep debt se recover hota hai.'});
+  }
+  if(dp >= 55){
+    recos.push({icon:'🧭', title:'Client boundaries set karein', text:'Fixed working hours define karein aur outside-hours messages ka reply karne se pehle ek buffer rakhein.'});
+  }
+  if(pa >= 55){
+    recos.push({icon:'🏆', title:'Chhoti wins track karein', text:'Har hafte apne completed projects/payments ka ek chhota log rakhein — isse accomplishment ka ehsaas wapas aata hai.'});
+  }
+  if(lf >= 55){
+    recos.push({icon:'💰', title:'Payment/negotiation stress kam karein', text:'Advance payment clauses aur clear contracts use karein taaki client-side stress kam ho.'});
+  }
+  if(intakeData.off >= 2){
+    recos.push({icon:'🌴', title:'Chhutti schedule karein', text:'Calendar mein har hafte kam se kam ek half-day off block karein — isse burnout curve slow ho jata hai.'});
+  }
+  if(recos.length === 0){
+    recos.push({icon:'✅', title:'Aap achhi condition mein hain', text:'Apni current routine maintain rakhein aur mahine mein ek baar yeh assessment dobara lein.'});
+  }
+  return recos;
+}
+
+/* ============ HISTORY (localStorage) ============ */
+function saveToHistory(overall, dimensions){
+  const history = JSON.parse(localStorage.getItem('burnout_history') || '[]');
+  history.push({
+    date: new Date().toISOString(),
+    score: overall,
+    dimensions: dimensions.map(d=>({name:d.name, score:d.score})),
+    role: intakeData.role
+  });
+  localStorage.setItem('burnout_history', JSON.stringify(history));
+}
+
+function showHistory(){
+  document.getElementById('intakeCard').classList.add('hidden');
+  document.getElementById('quizCard').classList.add('hidden');
+  document.getElementById('resultCard').classList.add('hidden');
+  document.getElementById('historyCard').classList.remove('hidden');
+
+  const history = JSON.parse(localStorage.getItem('burnout_history') || '[]').reverse();
+  const content = document.getElementById('historyContent');
+
+  if(history.length === 0){
+    content.innerHTML = `<div class="history-empty">Abhi tak koi assessment history nahi hai. Pehla test lein!</div>`;
+    return;
+  }
+
+  content.innerHTML = `
+    <table class="history-table">
+      <thead><tr><th>Tareekh</th><th>Score</th><th>Risk Level</th></tr></thead>
+      <tbody>
+        ${history.map(h=>{
+          const risk = riskLevel(h.score);
+          const d = new Date(h.date);
+          return `<tr>
+            <td>${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</td>
+            <td style="font-family:var(--font-mono);">${h.score}/100</td>
+            <td><span class="mini-chip ${risk.cls}">${risk.label}</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function hideHistory(){
+  document.getElementById('historyCard').classList.add('hidden');
+  document.getElementById('intakeCard').classList.remove('hidden');
+}
+
+function clearHistory(){
+  if(confirm('Kya aap sach mein poori history delete karna chahte hain?')){
+    localStorage.removeItem('burnout_history');
+    showHistory();
+    showToast('History clear ho gayi');
+  }
+}
+
+/* ============ RESTART / PRINT ============ */
+function restartTool(){
+  answers = new Array(QUESTIONS.length).fill(null);
+  currentQ = 0;
+  document.getElementById('resultCard').classList.add('hidden');
+  document.getElementById('intakeCard').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function printReport(){
+  window.print();
+}
+
+/* ============ MODALS / TOAST ============ */
+function openModal(id){ document.getElementById(id).classList.add('active'); }
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click', e=>{ if(e.target === el) el.classList.remove('active'); });
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ============ RAZORPAY (DEMO MODE) ============ */
+function mockPayment(){
+  // Replace with real Razorpay integration:
+  // const options = { key: "rzp_live_xxxx", amount: 14900, currency: "INR",
+  //   name: "IncomeAIHub", description: "Burnout Recovery Plan",
+  //   handler: function(response){ unlockPremium(); },
+  // };
+  // const rzp = new Razorpay(options); rzp.open();
+  showToast('Demo Mode: Payment gateway abhi configure nahi hai');
+  setTimeout(()=>{
+    closeModal('premiumModal');
+    showToast('✅ Demo unlock: Recovery Plan (sample) unlocked');
+  }, 1200);
+}
+</script>
+</body>
+</html>
